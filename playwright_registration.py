@@ -1,8 +1,9 @@
 from playwright.sync_api import sync_playwright, expect
 
 with sync_playwright() as playwright:
-    chromium = playwright.chromium.launch(headless=False)
-    page = chromium.new_page()
+    browser = playwright.chromium.launch(headless=False)
+    context = browser.new_context()
+    page = context.new_page()
 
     page.goto('https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/auth/registration')
     email_input = page.get_by_role("textbox", name="Email")
@@ -21,4 +22,13 @@ with sync_playwright() as playwright:
     expect(dashboard_title_text).to_be_visible()
     expect(dashboard_title_text).to_have_text("Dashboard")
 
+    context.storage_state(path = 'browser-state.json')
 
+
+with sync_playwright() as playwright:
+    browser = playwright.chromium.launch(headless=False)
+    page = browser.new_page(storage_state='browser-state.json')
+
+    page.goto('https://nikita-filonov.github.io/qa-automation-engineer-ui-course/#/dashboard')
+
+    page.wait_for_timeout(10000)
